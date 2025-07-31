@@ -1,0 +1,75 @@
+.love-story-container {
+  min-height: 100vh;
+  width: 100%;
+  background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
+  transition: background-color 1s ease;
+}
+
+.story-section {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  opacity: 0; /* Will be animated by GSAP */
+}
+
+.story-content {
+  flex: 1;
+  padding: 2rem;
+  max-width: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.story-image {
+  flex: 1;
+  max-width: 45%;
+  overflow: hidden;
+  border-radius: 10px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+  transform: translateY(100px); /* Initial state for parallax */
+}
+
+.story-image img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 10px;
+}
+
+.story-section:nth-child(even) {
+  flex-direction: row-reverse;
+}
+
+.story-section h2 {
+  font-size: 2.5rem;
+  color: #ff6b6b;
+  margin-bottom: 1.5rem;
+}
+
+.story-section p {
+  font-size: 1.1rem;
+  line-height: 1.8;
+  color: #555;
+  margin-bottom: 1.5rem;
+}
+
+@media screen and (max-width: 768px) {
+  .story-section {
+    flex-direction: column;
+    padding: 2rem;
+  }
+
+  .story-content, .story-image {
+    max-width: 100%;
+    margin-bottom: 2rem;
+  }
+
+  .story-section:nth-child(even) {
+    flex-direction: column;
+  }
+}
