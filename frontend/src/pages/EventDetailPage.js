@@ -8,8 +8,12 @@ import { useState } from "react";
 import Masonry from "react-masonry-css";
 import "../styles/EventDetailPage.css"; // Create this CSS file
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
-
+// const API_BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
+// const API_BASE_URL =
+//   process.env.NODE_ENV === "development"
+//     ? "http://localhost:5000/api"
+//     : "https://birthday-weui.onrender.com/api";
+const API_BASE_URL = process.env.REACT_APP_API_URL;
 const EventDetailPage = () => {
   const { id } = useParams();
   const { galleryItems } = useGallery();

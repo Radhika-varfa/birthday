@@ -139,8 +139,13 @@ import axios from "axios";
 export const MemoryContext = createContext();
 
 export const MemoryProvider = ({ children }) => {
-  const API_BASE_URL =
-    process.env.REACT_APP_API_URL || "http://localhost:5000/api";
+  // const API_BASE_URL =
+  //   process.env.REACT_APP_API_URL || "http://localhost:5000/api";
+  const API_BASE_URL = process.env.REACT_APP_API_URL;
+  // const API_BASE_URL =
+  //   process.env.NODE_ENV === "development"
+  //     ? "http://localhost:5000/api"
+  //     : "https://birthday-weui.onrender.com/api";
   const [memories, setMemories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);

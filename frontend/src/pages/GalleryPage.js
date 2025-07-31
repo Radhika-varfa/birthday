@@ -8,8 +8,13 @@ import { useNavigate } from "react-router-dom";
 import "../styles/GalleryPage.css";
 import GalleryForm from "./GalleryForm";
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
+// const API_BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
 
+const API_BASE_URL = process.env.REACT_APP_API_URL;
+// const API_BASE_URL =
+//   process.env.NODE_ENV === "development"
+//     ? "http://localhost:5000/api"
+//     : "https://birthday-weui.onrender.com/api";
 const GalleryPage = () => {
   const { galleryItems, loading, error } = useGallery();
   const [isOpen, setIsOpen] = useState(false);

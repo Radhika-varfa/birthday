@@ -234,7 +234,7 @@
 //               <option value="other">Other</option>
 //             </select>
 //           </div>
-//           {/* 
+//           {/*
 //           <div className="form-group">
 //             <label>Location (Latitude, Longitude)</label>
 //             <div className="coordinates-input">
@@ -314,8 +314,14 @@ import { MemoryContext } from "../context/MemoryContext";
 import { motion } from "framer-motion";
 import "../styles/MemoryForm.css";
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5000/api";
+// const API_BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5000/api";
 
+const API_BASE_URL = process.env.REACT_APP_API_URL;
+
+// const API_BASE_URL =
+//   process.env.NODE_ENV === "development"
+//     ? "http://localhost:5000/api"
+//     : "https://birthday-weui.onrender.com/api";
 const MemoryForm = ({ memoryToEdit, onClose }) => {
   const { addMemory, updateMemory } = useContext(MemoryContext);
   const [formData, setFormData] = useState({
@@ -325,26 +331,30 @@ const MemoryForm = ({ memoryToEdit, onClose }) => {
     category: memoryToEdit?.category || "other",
   });
   const [files, setFiles] = useState([]);
-  const [previewImages, setPreviewImages] = useState(memoryToEdit?.images || []);
+  const [previewImages, setPreviewImages] = useState(
+    memoryToEdit?.images || []
+  );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleImageChange = (e) => {
     const newFiles = Array.from(e.target.files);
-    setFiles(prev => [...prev, ...newFiles]);
+    setFiles((prev) => [...prev, ...newFiles]);
 
-    const newPreviews = newFiles.map(file => URL.createObjectURL(file));
-    setPreviewImages(prev => [...prev, ...newPreviews]);
+    const newPreviews = newFiles.map((file) => URL.createObjectURL(file));
+    setPreviewImages((prev) => [...prev, ...newPreviews]);
   };
 
   const removeImage = (index) => {
-    setPreviewImages(prev => prev.filter((_, i) => i !== index));
-    setFiles(prev => prev.filter((_, i) => i !== index - (previewImages.length - files.length)));
+    setPreviewImages((prev) => prev.filter((_, i) => i !== index));
+    setFiles((prev) =>
+      prev.filter((_, i) => i !== index - (previewImages.length - files.length))
+    );
   };
 
   const handleSubmit = async (e) => {
@@ -359,7 +369,7 @@ const MemoryForm = ({ memoryToEdit, onClose }) => {
       formDataToSend.append("date", formData.date);
       formDataToSend.append("category", formData.category);
 
-      files.forEach(file => {
+      files.forEach((file) => {
         formDataToSend.append("images", file);
       });
 
@@ -391,8 +401,8 @@ const MemoryForm = ({ memoryToEdit, onClose }) => {
       console.error("Error:", err);
       setError(
         err.response?.data?.message ||
-        err.message ||
-        "Failed to save memory. Please try again."
+          err.message ||
+          "Failed to save memory. Please try again."
       );
     } finally {
       setLoading(false);
@@ -402,7 +412,9 @@ const MemoryForm = ({ memoryToEdit, onClose }) => {
   return (
     <motion.div className="memory-form-overlay">
       <motion.div className="memory-form">
-        <button className="close-btn" onClick={onClose}>×</button>
+        <button className="close-btn" onClick={onClose}>
+          ×
+        </button>
         <h2>{memoryToEdit ? "Edit Memory" : "Add New Memory"}</h2>
 
         {error && <div className="error-message">{error}</div>}
