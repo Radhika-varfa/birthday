@@ -83,112 +83,206 @@
 //   });
 // });
 
-require("dotenv").config();
+// require("dotenv").config();
+// const express = require("express");
+// const mongoose = require("mongoose");
+// const path = require("path");
+// const cors = require("cors");
+// const multer = require("multer"); // Added for Multer error handling
+// const memoryRoutes = require("./routes/memoryRoutes");
+// const userRoutes = require("./routes/userRoutes");
+// const galleryRoutes = require("./routes/galleryRoutes");
+
+// const app = express();
+
+// // Middleware Configuration
+// app.use(
+//   cors({
+//     origin: process.env.FRONTEND_URL,
+//     credentials: true,
+//   })
+// );
+
+// // Increased payload limits for JSON and urlencoded
+// app.use(express.json({ limit: "50mb" }));
+// app.use(express.urlencoded({ extended: true, limit: "50mb" }));
+
+// // Static files
+// app.use(express.static(path.join(__dirname, "public")));
+
+// // Routes
+// app.use("/api/memories", memoryRoutes);
+// app.use("/api/user", userRoutes);
+// app.use("/api/gallery", galleryRoutes);
+
+// // Static file serving with logging
+// app.use(
+//   "/uploads",
+//   express.static(path.join(__dirname, "public/uploads"), {
+//     setHeaders: (res, path) => {
+//       console.log(`Serving file: ${path}`);
+//     },
+//   })
+// );
+
+// // Database connection with enhanced error handling
+// const connectDB = async () => {
+//   try {
+//     const MONGO_URI =
+//       process.env.MONGO_URI || "mongodb://127.0.0.1:27017/memoryApp";
+
+//     await mongoose.connect(MONGO_URI, {
+//       serverSelectionTimeoutMS: 5000,
+//       socketTimeoutMS: 45000,
+//       maxPoolSize: 50, // Increased connection pool size
+//     });
+
+//     console.log("Connected to MongoDB successfully");
+
+//     const PORT = process.env.PORT || 5000;
+//     const server = app.listen(PORT, () => {
+//       console.log(`Server running on port ${PORT}`);
+//     });
+
+//     // Increase server timeout for large uploads
+//     server.timeout = 600000; // 10 minutes
+//   } catch (err) {
+//     console.error("MongoDB connection error:", err.message);
+//     process.exit(1);
+//   }
+// };
+
+// // Initialize connection
+// connectDB();
+
+// // Enhanced error handling middleware
+// app.use((err, req, res, next) => {
+//   console.error(err.stack);
+
+//   // Handle Multer errors specifically
+//   if (err instanceof multer.MulterError) {
+//     return res.status(413).json({
+//       message: "File upload error",
+//       error:
+//         err.code === "LIMIT_FILE_SIZE"
+//           ? "File too large (max 10MB per file)"
+//           : err.message,
+//       details: process.env.NODE_ENV === "development" ? err.stack : undefined,
+//     });
+//   }
+
+//   // Handle other errors
+//   res.status(500).json({
+//     message: "Something went wrong!",
+//     error: process.env.NODE_ENV === "development" ? err.message : undefined,
+//     ...(process.env.NODE_ENV === "development" && { stack: err.stack }),
+//   });
+// });
+
+// // Handle unhandled promise rejections
+// process.on("unhandledRejection", (err) => {
+//   console.error("Unhandled Rejection:", err);
+//   // Optionally exit the process
+//   // process.exit(1);
+// });
+
+// // Handle uncaught exceptions
+// process.on("uncaughtException", (err) => {
+//   console.error("Uncaught Exception:", err);
+//   // Optionally exit the process
+//   // process.exit(1);
+// });
+
 const express = require("express");
 const mongoose = require("mongoose");
 const path = require("path");
 const cors = require("cors");
-const multer = require("multer"); // Added for Multer error handling
+const multer = require("multer");
+
+if (process.env.NODE_ENV !== "production") {
+  require("dotenv").config();
+}
+
 const memoryRoutes = require("./routes/memoryRoutes");
 const userRoutes = require("./routes/userRoutes");
 const galleryRoutes = require("./routes/galleryRoutes");
 
 const app = express();
 
-// Middleware Configuration
+/* -------------------- Middleware -------------------- */
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL,
+    origin: process.env.FRONTEND_URL || "*",
     credentials: true,
   })
 );
 
-// Increased payload limits for JSON and urlencoded
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 
-// Static files
 app.use(express.static(path.join(__dirname, "public")));
 
-// Routes
+/* -------------------- Routes -------------------- */
 app.use("/api/memories", memoryRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/gallery", galleryRoutes);
 
-// Static file serving with logging
 app.use(
   "/uploads",
-  express.static(path.join(__dirname, "public/uploads"), {
-    setHeaders: (res, path) => {
-      console.log(`Serving file: ${path}`);
-    },
-  })
+  express.static(path.join(__dirname, "public/uploads"))
 );
 
-// Database connection with enhanced error handling
+/* -------------------- Database -------------------- */
 const connectDB = async () => {
-  try {
-    const MONGO_URI =
-      process.env.MONGO_URI || "mongodb://127.0.0.1:27017/memoryApp";
+  const MONGO_URI = process.env.MONGODB_URI;
 
+  if (!MONGO_URI) {
+    console.error("❌ MONGODB_URI is missing");
+    process.exit(1);
+  }
+
+  try {
     await mongoose.connect(MONGO_URI, {
       serverSelectionTimeoutMS: 5000,
-      socketTimeoutMS: 45000,
-      maxPoolSize: 50, // Increased connection pool size
     });
 
-    console.log("Connected to MongoDB successfully");
+    console.log("✅ MongoDB connected");
 
     const PORT = process.env.PORT || 5000;
     const server = app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
+      console.log(`🚀 Server running on port ${PORT}`);
     });
 
-    // Increase server timeout for large uploads
-    server.timeout = 600000; // 10 minutes
+    server.timeout = 600000;
   } catch (err) {
-    console.error("MongoDB connection error:", err.message);
+    console.error("❌ MongoDB connection error:", err.message);
     process.exit(1);
   }
 };
 
-// Initialize connection
 connectDB();
 
-// Enhanced error handling middleware
+/* -------------------- Error Handling -------------------- */
 app.use((err, req, res, next) => {
   console.error(err.stack);
 
-  // Handle Multer errors specifically
   if (err instanceof multer.MulterError) {
     return res.status(413).json({
       message: "File upload error",
-      error:
-        err.code === "LIMIT_FILE_SIZE"
-          ? "File too large (max 10MB per file)"
-          : err.message,
-      details: process.env.NODE_ENV === "development" ? err.stack : undefined,
+      error: err.message,
     });
   }
 
-  // Handle other errors
   res.status(500).json({
-    message: "Something went wrong!",
-    error: process.env.NODE_ENV === "development" ? err.message : undefined,
-    ...(process.env.NODE_ENV === "development" && { stack: err.stack }),
+    message: "Something went wrong",
   });
 });
 
-// Handle unhandled promise rejections
+/* -------------------- Process Safety -------------------- */
 process.on("unhandledRejection", (err) => {
   console.error("Unhandled Rejection:", err);
-  // Optionally exit the process
-  // process.exit(1);
 });
 
-// Handle uncaught exceptions
 process.on("uncaughtException", (err) => {
   console.error("Uncaught Exception:", err);
-  // Optionally exit the process
-  // process.exit(1);
 });
