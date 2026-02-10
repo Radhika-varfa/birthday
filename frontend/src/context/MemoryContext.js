@@ -133,7 +133,7 @@
 //   );
 // };
 
-import { createContext, useState, useEffect } from "react";
+import { createContext, useState, useEffect,useCallback } from "react";
 import axios from "axios";
 
 export const MemoryContext = createContext();
@@ -150,21 +150,24 @@ export const MemoryProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const fetchMemories = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const res = await axios.get(`${API_BASE_URL}/memories`);
-      setMemories(res.data);
-    } catch (err) {
-      console.error("Error fetching memories:", err);
-      setError(
-        err.response?.data?.message || err.message || "Failed to load memories"
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
+ const fetchMemories = useCallback(async () => {
+  setLoading(true);
+  setError(null);
+
+  try {
+    const res = await axios.get(`${API_BASE_URL}/memories`);
+    setMemories(res.data);
+  } catch (err) {
+    console.error("Error fetching memories:", err);
+    setError(
+      err.response?.data?.message ||
+        err.message ||
+        "Failed to load memories"
+    );
+  } finally {
+    setLoading(false);
+  }
+}, []);
 
   const addMemory = async (formData) => {
     setLoading(true);
